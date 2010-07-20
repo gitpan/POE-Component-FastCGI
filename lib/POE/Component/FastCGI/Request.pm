@@ -85,13 +85,14 @@ POE::Component::FastCGI::Response object that is linked to this request.
 =cut
 sub make_response {
    my($self, $response) = @_;
-   $self->{_res} = 1;
 
    if(not defined $response) {
       $response = POE::Component::FastCGI::Response->new(
          $self->{client},
          $self->{requestid},
       );
+		$self->{_res} = $response;
+      $response->request($self);
       return $response;
    }
 
@@ -101,6 +102,8 @@ sub make_response {
    
    $response->{client} = $self->{client};
    $response->{requestid} = $self->{requestid};
+   $response->request($self);
+	$self->{_res} = $response;
 
    return $response;
 }

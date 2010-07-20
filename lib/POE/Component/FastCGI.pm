@@ -2,7 +2,15 @@
 
 POE::Component::FastCGI - POE FastCGI server
 
+=head1 NO LONGER MAINTAINED
+
+This module is no longer maintained. You might consider L<AnyEvent::FCGI>
+or L<Net::FastCGI> instead. Or not using FastCGI at all and using a L<Plack>
+based server (very much recommended). Or ask and you can have this.
+
 =head1 SYNOPSIS
+
+You can use this module with a direct subroutine callback:
 
   use POE;
   use POE::Component::FastCGI;
@@ -12,6 +20,30 @@ POE::Component::FastCGI - POE FastCGI server
      Handlers => [
         [ '/' => \&default ],
      ]
+  );
+
+  sub default {
+     my($request) = @_;
+
+     my $response = $request->make_response;
+     $response->header("Content-type" => "text/html");
+     $response->content("A page");
+     $response->send;
+  }
+
+  POE::Kernel->run;
+
+and a POE event callback:
+
+  use POE;
+  use POE::Component::FastCGI;
+
+  POE::Component::FastCGI->new(
+     Port => 1026,
+     Handlers => [
+        [ '/' => 'poe_event_name' ],
+     ]
+     Session => 'MAIN',
   );
 
   sub default {
@@ -45,7 +77,7 @@ use POE qw(
 use POE::Component::FastCGI::Request;
 use POE::Component::FastCGI::Response;
 
-our $VERSION = '0.1';
+our $VERSION = '0.11';
 
 =item POE::Component::FastCGI->new([name => value], ...)
 
@@ -56,13 +88,15 @@ Parameters
   Auth (optional)
      A code reference to run when called as a FastCGI authorizer.
   Handlers (required)
-     A array reference with a mapping of paths to code references.
+     A array reference with a mapping of paths to code references or POE event names.
   Port (required unless Unix is set)
      Port number to listen on.
   Address (requied if Unix is set)
      Address to listen on.
   Unix (optional)
      Listen on UNIX socket given in Address.
+  Session (required if you want to get POE callbacks)
+     Into which session we should post the POE event back.
 
 The handlers parameter should be a list of lists defining either regexps of
 paths to match or absolute paths to code references.
@@ -102,6 +136,7 @@ sub new {
          accept => \&_accept,
          input  => \&_input,
          error  => \&_error,
+         shutdown  => \&_shutdown,
       },
       heap => \%args,
    );
@@ -138,7 +173,7 @@ sub _accept {
 }
 
 sub _input {
-   my($heap, $fcgi, $wheel_id) = @_[HEAP, ARG0, ARG1];
+   my($heap, $kernel, $fcgi, $wheel_id) = @_[HEAP, KERNEL, ARG0, ARG1];
    
    my $client = $heap->{wheels}->{$wheel_id};
 
@@ -175,12 +210,39 @@ sub _input {
    if(not defined $run) {
       $request->error(404, "No handler found for $path");
    }else{
-      $run->[1]->($request, $run->[0]);
+
+     if(ref($run->[1]) eq 'CODE') {
+       $run->[1]->($request, $run->[0]);
+     } else {
+       $kernel->post($heap->{Session}, $run->[1],$request, $run->[0]);
+     }
+
+     # Streaming support
+     if($request->{_res} and $request->{_res}->streaming) {
+       push @{$heap->{toclose}->{$wheel_id}}, $request->{_res};
+     }elsif(defined $request->{_res}) {
+       # Send and break circular ref
+       $request->{_res}->send if exists $request->{_res}->{client};
+       $request->{_res} = 0;
+     }
    }
 }
 
 sub _error {
    my($heap, $wheel_id) = @_[HEAP, ARG3];
+	if(exists $heap->{toclose}->{$wheel_id}) {
+		for(@{$heap->{toclose}->{$wheel_id}}) {
+			$_->closed;
+		}
+		delete $heap->{toclose}->{$wheel_id};
+	}
+   delete $heap->{wheels}->{$wheel_id};
+
+   undef;
+}
+
+sub _shutdown {
+   my($heap, $wheel_id) = @_[HEAP, ARG0];
    delete $heap->{wheels}->{$wheel_id};
 
    undef;

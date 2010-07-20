@@ -29,6 +29,7 @@ package POE::Component::FastCGI::Response;
 use strict;
 use base qw/HTTP::Response/;
 use bytes;
+#use URI;
 
 =item $response = POE::Component::FastCGI::Response->new($client, $id, $code)
 
@@ -51,6 +52,37 @@ sub new {
 sub DESTROY {
    my($self) = @_;
    $self->close;
+}
+
+=item $response->streaming
+
+Set and check streaming status
+
+=cut
+
+sub streaming {
+	my($self, $streaming) = @_;
+	if(defined $streaming) {
+		$self->{streaming} = $streaming;
+	}else{
+		return $self->{streaming};
+	}
+}
+
+=item $response->closed
+
+Set a callback to be called when this response is closed, mainly useful for
+streaming.
+
+=cut
+
+sub closed {
+	my($self, $callback) = @_;
+	if(defined $callback) {
+		$self->{closed} = $callback;
+	}elsif(defined $self->{closed}) {
+		$self->{closed}->($self);
+	}
 }
 
 =item $response->send
@@ -77,6 +109,13 @@ sub send {
       close => 1,
       content => join("\x0D\x0A", @headers, "") . $self->content
    });
+
+   ### FCGI_KEEP_CONN: disconnect after request if NOT set:
+   my $filter = $self->{client}->get_input_filter();
+   if ($filter->{conn}->[$filter->{requestid}]->{keepconn} == 0) {
+       $self->{client}->event( FlushedEvent => "shutdown" );
+   }
+
    delete $self->{client};
    return 1;
 }
@@ -120,11 +159,13 @@ actually send the redirect.
 
 =cut
 sub redirect {
-   my($self, $url) = @_;
+   my($self, $url, $uri) = @_;
+   $url = defined $self->request
+      ?  URI->new_abs($url, $self->request->uri)
+      : $url;
+
    $self->code(302);
-   $self->header(Location => ($url =~ m!^\w+://! ? $url : "http://"
-      . $self->uri->host . ($self->uri->port ? ":" . $self->uri->port : "")
-      . "/" . $url));
+   $self->header(Location => $url);
 }
 
 =item $response->error($code, $text)

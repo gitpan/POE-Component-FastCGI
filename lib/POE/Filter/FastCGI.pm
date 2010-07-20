@@ -39,6 +39,9 @@ BEGIN {
    use constant OVERLOADED       => 2;
    use constant UNKNOWN_ROLE     => 3;
 	
+    # Request flag constants
+    use constant FCGI_KEEP_CONN   => 1;
+
 	# Constant maps
 	@TYPE = qw(
 		NULL
@@ -76,7 +79,12 @@ sub new {
 sub get {
 	my($self, $stream) = @_;
 	$self->get_one_start($stream);
-	return $self->get_one;
+	my(@out, $conn);
+	do {
+		$conn = $self->get_one;
+		push @out => @$conn if @$conn;
+	}while(@$conn);
+	return \@out;
 }
 
 sub get_pending {
@@ -86,7 +94,6 @@ sub get_pending {
 
 sub get_one {
 	my($self) = @_;
-	my @output = ( );
 	
 	while($self->{buffer}) {
 		if($self->{state} == STATE_WAIT) {
@@ -98,13 +105,13 @@ sub get_one {
 			@$self{qw/version type requestid contentlen padlen/} =
 				unpack "CCnnC", $header;
 
-			die "Wrong version" if $self->{version} != FCGI_VERSION_1;
-         
+			warn "Wrong version" if $self->{version} != FCGI_VERSION_1;
+
 			if($self->{contentlen}) {
 				$self->{state} = STATE_DATA;
 			}else{
 				my $conn = $self->_do_record;
-				push @output, $conn if defined $conn;
+				return [$conn] if defined $conn;
 				next;
 			}
 		}
@@ -116,23 +123,22 @@ sub get_one {
 			substr $self->{buffer}, 0, $self->{padlen}, "";
 
 			my $conn = $self->_do_record($content);
-			push @output, $conn if defined $conn;
+			return [$conn] if defined $conn;
       } else {
          return [ ];
       }
 	}
-	return \@output;
+	return [ ];
 }
 
 sub get_one_start {
 	my($self, $stream) = @_;
-	$self->{buffer} = join '', @$stream;
+	$self->{buffer} .= join '', @$stream;
 }
 
 # Process FastCGI record
 sub _do_record {
 	my($self, $content) = @_;
-	#print "Got record: $TYPE[$self->{type}]\n";
 
 	if($self->{type} == BEGIN_REQUEST) {
 		my($role, $flags) = unpack "nC", $content;
@@ -142,6 +148,7 @@ sub _do_record {
 			role => $ROLE[$role],
 			cgi => { },
 		};
+                $self->{conn}->[$self->{requestid}]{keepconn} = $flags & FCGI_KEEP_CONN ? 1 : 0;
 		return $self->_cleanup;
 	}
 
