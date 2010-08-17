@@ -1,25 +1,23 @@
---- #YAML:1.0
-name:               POE-Component-FastCGI
-version:            0.11
-abstract:           POE FastCGI server
+---
+abstract: 'POE FastCGI server'
 author:
-    - David Leadbeater <cpan@dgl.cx>
-license:            unknown
-distribution_type:  module
+  - 'David Leadbeater <cpan@dgl.cx>'
+build_requires: {}
 configure_requires:
-    ExtUtils::MakeMaker:  0
-build_requires:
-    ExtUtils::MakeMaker:  0
-requires:
-    CGI::Util:       0
-    HTTP::Request:   0
-    HTTP::Response:  0
-    POE:             0
-no_index:
-    directory:
-        - t
-        - inc
-generated_by:       ExtUtils::MakeMaker version 6.56
+  ExtUtils::MakeMaker: 6.31
+dynamic_config: 0
+generated_by: 'Dist::Zilla version 4.102221, CPAN::Meta::Converter version 2.102160'
+license: perl
 meta-spec:
-    url:      http://module-build.sourceforge.net/META-spec-v1.4.html
-    version:  1.4
+  url: http://module-build.sourceforge.net/META-spec-v1.4.html
+  version: 1.4
+name: POE-Component-FastCGI
+requires:
+  CGI::Util: 0
+  HTTP::Request: 0
+  HTTP::Response: 0
+  POE: 0
+resources:
+  homepage: http://github.com/bingos/poe-component-fastcgi/tree
+  repository: git://github.com/bingos/poe-component-fastcgi.git
+version: 0.12

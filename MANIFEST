@@ -1,12 +1,15 @@
 Changes
-Makefile.PL
+LICENSE
 MANIFEST
+META.json
+META.yml
+Makefile.PL
 README
-META.yml                                Module meta-data (added by MakeMaker)
+dist.ini
+lib/POE/Component/FastCGI.pm
 lib/POE/Component/FastCGI/Request.pm
 lib/POE/Component/FastCGI/Response.pm
 lib/POE/Component/FastCGI/Stream.pm
-lib/POE/Component/FastCGI.pm
 lib/POE/Filter/FastCGI.pm
 t/fastcgi.t
 t/request.t
