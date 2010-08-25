@@ -4,7 +4,7 @@
       "David Leadbeater <cpan@dgl.cx>"
    ],
    "dynamic_config" : 0,
-   "generated_by" : "Dist::Zilla version 4.102221, CPAN::Meta::Converter version 2.102160",
+   "generated_by" : "Dist::Zilla version 4.102340, CPAN::Meta::Converter version 2.102160",
    "license" : [
       "perl_5"
    ],
@@ -37,6 +37,6 @@
          "web" : "http://github.com/bingos/poe-component-fastcgi/tree"
       }
    },
-   "version" : "0.12"
+   "version" : "0.14"
 }
 

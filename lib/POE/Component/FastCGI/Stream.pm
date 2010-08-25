@@ -1,6 +1,6 @@
 package POE::Component::FastCGI::Stream;
 BEGIN {
-  $POE::Component::FastCGI::Stream::VERSION = '0.12';
+  $POE::Component::FastCGI::Stream::VERSION = '0.14';
 }
 use strict;
 use warnings;
