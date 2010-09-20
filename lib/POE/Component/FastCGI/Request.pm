@@ -1,6 +1,6 @@
 package POE::Component::FastCGI::Request;
 BEGIN {
-  $POE::Component::FastCGI::Request::VERSION = '0.14';
+  $POE::Component::FastCGI::Request::VERSION = '0.16';
 }
 
 use strict;

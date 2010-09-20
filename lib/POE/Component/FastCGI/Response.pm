@@ -1,6 +1,6 @@
 package POE::Component::FastCGI::Response;
 BEGIN {
-  $POE::Component::FastCGI::Response::VERSION = '0.14';
+  $POE::Component::FastCGI::Response::VERSION = '0.16';
 }
 
 use strict;
@@ -51,6 +51,7 @@ sub send {
    # Use network newlines, and be sure not to mangle newlines in the
    # response's content.
 
+   $self->header( "Content-Length" => length($self->content) );
    my @headers;
    push @headers, $status_line;
    push @headers, $self->headers_as_string("\x0D\x0A");

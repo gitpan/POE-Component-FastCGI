@@ -25,7 +25,7 @@ my %WriteMakefileArgs = (
     'HTTP::Response' => '0',
     'POE' => '0'
   },
-  'VERSION' => '0.14',
+  'VERSION' => '0.16',
   'test' => {
     'TESTS' => 't/*.t'
   }
