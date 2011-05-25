@@ -4,7 +4,7 @@ use warnings;
 
 
 
-use ExtUtils::MakeMaker 6.31;
+use ExtUtils::MakeMaker 6.30;
 
 
 
@@ -13,7 +13,7 @@ my %WriteMakefileArgs = (
   'AUTHOR' => 'David Leadbeater <cpan@dgl.cx>',
   'BUILD_REQUIRES' => {},
   'CONFIGURE_REQUIRES' => {
-    'ExtUtils::MakeMaker' => '6.31'
+    'ExtUtils::MakeMaker' => '6.30'
   },
   'DISTNAME' => 'POE-Component-FastCGI',
   'EXE_FILES' => [],
@@ -25,7 +25,7 @@ my %WriteMakefileArgs = (
     'HTTP::Response' => '0',
     'POE' => '0'
   },
-  'VERSION' => '0.16',
+  'VERSION' => '0.18',
   'test' => {
     'TESTS' => 't/*.t'
   }

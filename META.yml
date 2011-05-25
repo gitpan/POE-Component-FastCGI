@@ -4,9 +4,9 @@ author:
   - 'David Leadbeater <cpan@dgl.cx>'
 build_requires: {}
 configure_requires:
-  ExtUtils::MakeMaker: 6.31
+  ExtUtils::MakeMaker: 6.30
 dynamic_config: 0
-generated_by: 'Dist::Zilla version 4.102341, CPAN::Meta::Converter version 2.102400'
+generated_by: 'Dist::Zilla version 4.200006, CPAN::Meta::Converter version 2.110930'
 license: perl
 meta-spec:
   url: http://module-build.sourceforge.net/META-spec-v1.4.html
@@ -18,6 +18,6 @@ requires:
   HTTP::Response: 0
   POE: 0
 resources:
-  homepage: http://github.com/bingos/poe-component-fastcgi/tree
-  repository: git://github.com/bingos/poe-component-fastcgi.git
-version: 0.16
+  homepage: http://github.com/bingos/poe-component-fastcgi
+  repository: http://github.com/bingos/poe-component-fastcgi
+version: 0.18

@@ -1,6 +1,6 @@
 package POE::Component::FastCGI;
 BEGIN {
-  $POE::Component::FastCGI::VERSION = '0.16';
+  $POE::Component::FastCGI::VERSION = '0.18';
 }
 
 use strict;
@@ -26,24 +26,37 @@ sub new {
    croak "No handlers defined" unless defined $args{Auth} or defined
       $args{Handlers};
 
-   my $session = POE::Session->create(
+   my $session_id = POE::Session->create(
       inline_states => {
          _start => \&_start,
          accept => \&_accept,
          input  => \&_input,
          error  => \&_error,
-         shutdown  => \&_shutdown,
+         client_shutdown  => \&_client_shutdown,
+
+         # For graceful external shutdown
+         shutdown => \&_shutdown,
+
+         # triggered from PoCo::FastCGI::Response in order to make sure
+         # we're writing to our wheel from the correct session.
+         w_send => \&_w_send,
+         w_write => \&_w_write,
+         w_close => \&_w_close,
+
+         # Dummys to keep of warnings
+         _stop => sub {},
+         _child => sub {}
       },
       heap => \%args,
-   );
-   
-   return 1;
+   )->ID;
+
+   return $session_id;
 }
 
 sub _start {
    my($session, $heap) = @_[SESSION, HEAP];
 
-   POE::Component::Server::TCP->new(
+   $heap->{server} = POE::Component::Server::TCP->new(
       Port => $heap->{Port},
       (defined $heap->{Unix} ? (Domain => AF_UNIX) : ()),
       (defined $heap->{Address} ? (Address => $heap->{Address}) : ()),
@@ -69,17 +82,17 @@ sub _accept {
 }
 
 sub _input {
-   my($heap, $kernel, $fcgi, $wheel_id) = @_[HEAP, KERNEL, ARG0, ARG1];
-   
+   my($heap, $session, $kernel, $fcgi, $wheel_id) = @_[HEAP, SESSION, KERNEL, ARG0, ARG1];
+
    my $client = $heap->{wheels}->{$wheel_id};
 
    my $request = POE::Component::FastCGI::Request->new(
-      $client,
+      $client, $session->ID,
       $fcgi->[0], # request id
       $fcgi->[2], # cgi parameters
       $fcgi->[1]->{postdata}
    );
-   
+
    if($fcgi->[1]->{role} eq 'AUTHORIZER') {
       if(defined $heap->{Auth}) {
          $heap->{Auth}->($request);
@@ -102,7 +115,7 @@ sub _input {
             ($handler->[0] eq $path));
       }
    }
-   
+
    if(not defined $run) {
       $request->error(404, "No handler found for $path");
    }else{
@@ -137,11 +150,39 @@ sub _error {
    undef;
 }
 
-sub _shutdown {
+sub _client_shutdown {
    my($heap, $wheel_id) = @_[HEAP, ARG0];
+
    delete $heap->{wheels}->{$wheel_id};
 
    undef;
+}
+
+sub _shutdown {
+   my($heap, $kernel)  = @_[HEAP, KERNEL];
+
+   return unless defined $heap->{server};
+
+   # Tell TCP server to shutdown
+   $kernel->post($heap->{server}, 'shutdown');
+   delete $heap->{server};
+}
+
+# these are here to help PoCo::FastCGI::Response
+# to deal with it's wheel from the right session
+sub _w_send {
+   my($resp)  = $_[ARG0];
+   $resp->_send();
+}
+
+sub _w_write {
+   my($resp, $out)  = @_[ARG0, ARG1];
+   $resp->_write($out);
+}
+
+sub _w_close {
+   my($resp, $out)  = @_[ARG0, ARG1];
+   $resp->_close($out);
 }
 
 1;
@@ -222,6 +263,8 @@ Parameters
   Session (required if you want to get POE callbacks)
      Into which session we should post the POE event back.
 
+The call returns a POE session ID. This should be stored, and when application is to be terminated, a 'shutdown' event can be posted to this session. This will terminate the server socket and free resources.
+
 The handlers parameter should be a list of lists defining either regexps of
 paths to match or absolute paths to code references.
 
@@ -263,10 +306,10 @@ Lighttpd configuration example (assuming listening on port 1026):
             "check-local" => "disable",
             "docroot" => "/"
             )
-         )  
+         )
       )
    }
-   
+
 With mod_fastcgi on Apache the equivalent directive is
 C<FastcgiExternalServer>.
 

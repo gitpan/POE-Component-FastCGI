@@ -1,29 +1,83 @@
-Revision history for Perl extension POE::Component::FastCGI.
+==============================
+2011-05-25 09:35:54 +0100 0.18
+==============================
 
-0.16  Mon Sep 20 22:52:03 BST 2010
+  commit 6bb4c2edbddb7947657a29adf827978d9d727ec2
+  Author: Chris 'BinGOs' Williams <chris@bingosnet.co.uk>
+  Date:   Wed May 25 09:35:54 2011 +0100
+  
+    Bump version to 0.18
 
-  Apply a patch RT#61496 from symkat to add the content-length header to responses.
+  commit 615caefeb459b6ffe8b541cd87c5fae1cc031abf
+  Author: Chris 'BinGOs' Williams <chris@bingosnet.co.uk>
+  Date:   Wed May 25 09:34:16 2011 +0100
+  
+    Remove trailing whitespace
 
-0.14  Thu Aug 26 00:16:47 BST 2010
+  commit ccb238889e16594b1239a86bb07c4816357b6e34
+  Author: Chris 'BinGOs' Williams <chris@bingosnet.co.uk>
+  Date:   Wed May 25 09:32:09 2011 +0100
+  
+    Make Changes be automagically generated from git history
 
-  Make the use of POE::Session postbacks work again
+  commit e3f5e0a784f53bcfc624a1abe2ba71235c8ea929
+  Author: Chris 'BinGOs' Williams <chris@bingosnet.co.uk>
+  Date:   Wed May 25 09:28:57 2011 +0100
+  
+    Fix the tests after slight API change for ::Request
 
-0.12  Tue Aug 17 13:02:27 BST 2010
+  commit 2d2994af4c6c11636b4a3fe22f43076c100b462e
+  Author: Johan Ström <johan@stromnet.se>
+  Date:   Tue May 24 22:29:20 2011 +0200
+  
+    Added doc about shutdown event
 
-  POE Community release
+  commit 78786e5eaf5426994466ff86bfcfc136a7e5d518
+  Author: Johan Ström <johan@stromnet.se>
+  Date:   Tue May 24 22:22:39 2011 +0200
+  
+    Make sure wheels are dealt with from the correct session for proper
+    cleanup. If a event callback was used, and the external session
+    called write/send/close, the wheel was beeing worked on from the
+    wrong session. For regular write this was not a problem, but when
+    registering the FlushedEvent, the 'shutdown' event was sent to the
+    wrong session. This yielded a non-free'ed wheel. Also forcibly remove
+    circual references on cleanup, DESTROY get's called as it should now.
 
-0.11  No longer maintained
+  commit 2c010ae1328ba60cc1aba9d12fa5c85d722047c9
+  Author: Johan Ström <johan@stromnet.se>
+  Date:   Tue May 24 22:21:21 2011 +0200
+  
+    Expose public 'shutdown' event to properly shutdown server component.
+    Also added dummy _stop/_child methods to avoid warnings. 
 
-  If you wish to have maint. of this module just ask.
+==============================
+2010-09-20 22:52:22 +0100 0.16
+==============================
 
-  Noticed the rt.cpan.org bug reports, some of which didn't get to me for some
-  reason.
+  commit 128aca8bca47d1e8826c2ebaa2ab05087b2ccf57
+  Author: Chris 'BinGOs' Williams <chris@bingosnet.co.uk>
+  Date:   Mon Sep 20 22:52:22 2010 +0100
+  
+    Update Changes
 
-  Fix:
-    RT #50539: FCGI_KEEP_CONN
-    RT #34396: Filter dies with "Wrong version" on big POST requests
-    RT #30282: POE callbacks?
+  commit 621bb4cccfd61ee00555a8bd9071eaea0b0ec934
+  Author: Chris 'BinGOs' Williams <chris@bingosnet.co.uk>
+  Date:   Mon Sep 20 22:50:46 2010 +0100
+  
+    Apply a patch RT#61496 from symkat to add the content-length header
+    to responses. 
 
-0.1  Sat Mar 12 02:04:51 2005
-	- original version
+==============================
+2010-08-26 00:17:45 +0100 0.14
+==============================
 
+  commit d12721becba90f58c932c68b370dc536a2e4b1f6
+  Author: Chris 'BinGOs' Williams <chris@bingosnet.co.uk>
+  Date:   Thu Aug 26 00:17:45 2010 +0100
+  
+    Make the use of POE::Session postbacks work again 
+
+====================================
+End of changes in the last 1825 days
+====================================

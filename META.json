@@ -4,7 +4,7 @@
       "David Leadbeater <cpan@dgl.cx>"
    ],
    "dynamic_config" : 0,
-   "generated_by" : "Dist::Zilla version 4.102341, CPAN::Meta::Converter version 2.102400",
+   "generated_by" : "Dist::Zilla version 4.200006, CPAN::Meta::Converter version 2.110930",
    "license" : [
       "perl_5"
    ],
@@ -16,7 +16,7 @@
    "prereqs" : {
       "configure" : {
          "requires" : {
-            "ExtUtils::MakeMaker" : "6.31"
+            "ExtUtils::MakeMaker" : "6.30"
          }
       },
       "runtime" : {
@@ -30,13 +30,13 @@
    },
    "release_status" : "stable",
    "resources" : {
-      "homepage" : "http://github.com/bingos/poe-component-fastcgi/tree",
+      "homepage" : "http://github.com/bingos/poe-component-fastcgi",
       "repository" : {
          "type" : "git",
-         "url" : "git://github.com/bingos/poe-component-fastcgi.git",
-         "web" : "http://github.com/bingos/poe-component-fastcgi/tree"
+         "url" : "http://github.com/bingos/poe-component-fastcgi",
+         "web" : "http://github.com/bingos/poe-component-fastcgi"
       }
    },
-   "version" : "0.16"
+   "version" : "0.18"
 }
 
