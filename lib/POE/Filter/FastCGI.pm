@@ -1,6 +1,6 @@
 package POE::Filter::FastCGI;
 BEGIN {
-  $POE::Filter::FastCGI::VERSION = '0.18';
+  $POE::Filter::FastCGI::VERSION = '0.19';
 }
 
 use strict;

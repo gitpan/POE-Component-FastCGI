@@ -2,6 +2,18 @@
 9999-99-99 99:99:99 +0000 HEAD
 ==============================
 
+  commit e5afb6144d6c4960251dbb48a87d0f29a7db000a
+  Author: Torsten Raudssus <github@raudssus.de>
+  Date:   Mon Oct 10 00:22:58 2011 +0200
+  
+    Oh dear, ok ok, version needs to be upgraded by hand, get it ;)
+
+  commit 5d542746af1237214b31c7bcee45caadd123b392
+  Author: Torsten Raudssus <github@raudssus.de>
+  Date:   Mon Oct 10 00:22:06 2011 +0200
+  
+    Pointless commit to cheat CPAN
+
   commit b7868e20f3530e11cbea7a5463099ab5ae883cb1
   Author: Torsten Raudssus <github@raudssus.de>
   Date:   Sun Oct 9 23:34:56 2011 +0200
