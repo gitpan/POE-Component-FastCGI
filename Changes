@@ -1,4 +1,28 @@
 ==============================
+9999-99-99 99:99:99 +0000 HEAD
+==============================
+
+  commit b7868e20f3530e11cbea7a5463099ab5ae883cb1
+  Author: Torsten Raudssus <github@raudssus.de>
+  Date:   Sun Oct 9 23:34:56 2011 +0200
+  
+    Added .gitignore
+
+  commit 9049f78c923952e208385f029ec6d0ea4af82b00
+  Author: Treeki <treeki@gmail.com>
+  Date:   Sun Oct 9 22:32:14 2011 +0200
+  
+    calling Response->send explicitly no longer crashes after the handler
+    is done
+
+  commit 7b99c260f8120e0224c0f86fb0dfd2396ef99e62
+  Author: Treeki <treeki@gmail.com>
+  Date:   Sun Oct 9 21:51:18 2011 +0200
+  
+    "wrong version" warning now says that a request from a web browser
+    may cause it 
+
+==============================
 2011-05-25 09:35:54 +0100 0.18
 ==============================
 
